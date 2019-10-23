@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<script type="text/javascript">
+    $(function () {
+        $.ajax({
+            url:'/findAll2',
+            type:'GET',
+            dataType:'JSON',
+            success:function (data) {
+                console.log(data);
+                //遍历data，看有几个一级菜单，就创建几个百叶窗
+                $(data).each(function (index,menu) {
+                    if(menu.pid ==0){ //是一级目录
+                        //动态创建百叶窗
+                        $("#myAccordion").accordion("add",{
+                            title:menu.text,
+                            id:"first"+menu.id //给一级菜单的标签中，添加id属性
+                        })
+                        //在一级目录的标签上，动态添加树形菜单。
+                        $("#first"+menu.id).html("<ul id='myTree"+menu.id+"'></ul>");
+                        //将动态创建处理的ul渲染成tree
+                        $("#myTree"+menu.id).tree({
+                            data:menu.children,   //加载一级菜单下的子菜单集合,data表示加载数据（数据已经获取到了）
+                            onClick:function (node) {
+                                // alert(node.text);
+                                //判断节点的属性或url为空，则不创建
+                                if(node.attributes == null || node.attributes.url == null){
+                                    return ;
+                                }
+                                //判断选项卡是否已经存在
+                                if($("#tt").tabs("exists",node.text)){
+                                    //存在则选中
+                                    $("#tt").tabs("select",node.text);
+                                }else{
+                                    //不存在则创建选项卡
+                                    $("#tt").tabs("add",{
+                                        title:node.text,
+                                        selected:true,
+                                        closable:true,
+                                        // content:"<iframe src='"+node.attributes.url+"' style='width: 100%;height: 98%;' frameborder='0'></iframe>",
+                                        iconCls:node.attributes.icon,
+                                        href:node.attributes.url
+                                    });
+                                }
+                            }
+                        })
+                    }
+                });
+            },
+            error:function () {
+                alert("发生错误了");
+            }
+        })
+    })
+</script>
+   <div id="myAccordion" class="easyui-accordion" style="width:500px;height:300px;"data-options="fit:'true'"></div>
+<!--<div class="easyui-accordion" style="width:500px;height:300px;" data-options="fit:'true'">
+    <div title="About" data-options="iconCls:'icon-ok'" style="overflow:auto;padding: 10px">
+        <h3 style="color:#0099FF;">Accordion for jQuery</h3>
+        <p>Accordion is a part of easyui framework for jQuery. It lets you define your accordion component on web page more easily.</p>
+    </div>
+    <div title="Help" data-options="iconCls:'icon-help'" style="padding:10px;">
+        <p>The accordion allows you to provide multiple panels and display one or more at a time. Each panel has built-in support for expanding and collapsing. Clicking on a panel header to expand or collapse that panel body. The panel content can be loaded via ajax by specifying a 'href' property. Users can define a panel to be selected. If it is not specified, then the first panel is taken by default.</p>
+    </div>
+    <div title="TreeMenu" data-options="iconCls:'icon-search'" style="padding:10px 0;">
+        <ul id="my_tree"></ul>
+    </div>
+</div>
+<script type="text/javascript">
+    $("#my_tree").tree({
+        url:"/findAll2",
+        method:"GET",
+        animate:true,
+        lines:true,
+        onClick: function (node) {
+            //alert(node.text);
+            //先获取tabs中是否有tab
+            var has =$("#tt").tabs("exists",node.text);
+            //判断
+            if (has){
+                //有了，就选中
+                $("#tt").tabs("select",node.text);
+            }else {
+                //没有，就创建
+                $("#tt").tabs('add',{
+                    title:node.text,
+                    selected:true,
+                    closable:true,
+                    //content:"<iframe src='"+node.attributes.url+"' style='width: 100%;height: 98%;' frameborder='0'></iframe>",
+                })
+            }
+        }
+    })
+</script>-->
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--easyui-->
+    <link rel="stylesheet" type="text/css" href="js/jquery-easyui-1.8.5/themes/default/easyui.css">
+    <link rel="stylesheet" type="text/css" href="js/jquery-easyui-1.8.5/themes/icon.css">
+    <script type="text/javascript" src="js/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery-easyui-1.8.5/jquery.easyui.min.js"></script>
+    <!--国际化-->
+    <script type="text/javascript" src="js/jquery-easyui-1.8.5/locale/easyui-lang-zh_CN.js"></script>
+</head>
+<body>
+<script type="text/javascript">
+    $(function () {
+        $('#dg').datagrid({
+            url:'/showEmp',
+            method:'GET',
+            pagination:true,  //分页工具栏
+            rownumbers:true,  //显示行号
+            pageList:[2,4,6,8,10],
+            fitColumns:true,
+            columns:[[
+                {field:'empno',title:'编号',width:100,hidden:true},
+                {field:'ename',title:'姓名',width:100},
+                {field:'job',title:'岗位',width:100,align:'right'},
+                {field:'mgr',title:'上级领导',width:100,align:'right'},
+                {field:'hiredate',title:'入职日期',width:100,align:'right'},
+                {field:'sal',title:'工资',width:100,align:'right'},
+                {field:'comm',title:'奖金',width:100,align:'right'},
+                {field:'deptno',title:'部门',width:100,align:'right'}
+            ]],
+            toolbar: [{ //工具条
+                text:'添加',
+                iconCls: 'icon-add',
+                handler: function(){
+                    //打开对话框，并修改标题
+                    $('#dlg').dialog('open').dialog('setTitle','添加员工');
+                    //清空表单
+                    $('#emp_add_form').form('clear');
+                    //设置添加的控制器地址
+                    url = '/emp2';
+                }
+            },'-',{
+                text:'修改',
+                iconCls: 'icon-edit',
+                handler: function(){
+                    //是否选择一行
+                    var row = $('#dg').datagrid('getSelected');
+                    //判断如果选择了一行
+                    if (row){
+                        //打开对话框
+                        $('#dlg').dialog('open').dialog('setTitle','修改用户');
+                        //往表单中加载选中行的数据
+                        $('#emp_add_form').form('load',row);
+                        //设置修改的控制器地址
+                        url = '/upd';
+                    }else{
+                        $.messager.alert('警告','请选择一行');
+                    }
+                }
+            },'-',{
+                text:'删除',
+                iconCls: 'icon-remove',
+                handler: function(){
+                    //获取选中的行
+                    if($("#dg").datagrid("getSelections").length > 0){
+                        var row = $("#dg").datagrid("getSelected");
+                        url = "/del/"+row.empno;
+                        $.messager.confirm('删除确认', '您确定要删除这行吗?', function(r){
+                            if (r){
+                                //发生ajax请求
+                                $.ajax({
+                                    url:url,
+                                    type:"POST",
+                                    success:function (json) {
+                                        if(json == "success"){
+                                            //刷新数据
+                                            $("#dg").datagrid("reload");
+                                            $.messager.show({
+                                                title:'系统消息',
+                                                msg:'删除成功',
+                                                timeout:1000,
+                                                showType:'slide'
+                                            });
+                                        }
+                                    },
+                                    error:function () {
+                                        $.messager.show({
+                                            title:'系统消息',
+                                            msg:'删除失败',
+                                            timeout:1000,
+                                            showType:'slide'
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }else{
+                        $.messager.alert("系统信息","至少选择一行");
+                    }
+                }
+            }]
+        });
+    })
+
+    //添加&修改员工
+    function saveOrUpdateEmp() {
+        $('#emp_add_form').form('submit',{
+            url: url,
+            onSubmit: function(){
+                return $(this).form('validate');
+            },
+            success: function(result){
+                //判断服务器返回结果
+                if(result == "success"){
+                    //提示添加修改成功
+                    $.messager.show({
+                        title:'系统消息',
+                        msg:'更新成功.',
+                        timeout:1000,
+                        showType:'slide'
+                    });
+
+                    //关闭对话框
+                    $("#dlg").dialog("close");
+
+                    //刷新数据表格
+                    $("#dg").datagrid("reload")
+
+                }else {
+                    //提示添加修改失败
+                    $.messager.show({
+                        title:'系统消息',
+                        msg:'更新失败.',
+                        timeout:1000,
+                        showType:'slide'
+                    });
+                }
+            }
+        });
+    }
+</script>
+<table id="dg"></table>
+<div id="dlg" class="easyui-dialog" style="width:400px;height:480px;padding:10px 20px"
+     closed="true" buttons="#dlg-buttons">
+    <div class="ftitle">User Information</div>
+    <form id="emp_add_form" method="post" novalidate>
+        <input name="empno" type="hidden"  class="easyui-textbox">
+        <div class="fitem">
+            <label>姓名：</label>
+            <input name="ename" class="easyui-textbox" required="true">
+        </div>
+        <div class="fitem">
+            <label>岗位：</label>
+            <input name="job" class="easyui-textbox">
+        </div>
+        <div class="fitem">
+            <label>上级领导：</label>
+            <input name="mgr" class="easyui-textbox">
+        </div>
+        <div class="fitem">
+            <label>入职日期：</label>
+            <input type="date" name="hiredate" class="easyui-textbox">
+        </div>
+        <div class="fitem">
+            <label>工资：</label>
+            <input name="sal" class="easyui-textbox">
+        </div>
+        <div class="fitem">
+            <label>奖金：</label>
+            <input name="comm" class="easyui-textbox">
+        </div>
+        <div class="fitem">
+            <label>部门：</label>
+            <input name="deptno" class="easyui-textbox">
+        </div>
+    </form>
+</div>
+<div id="dlg-buttons">
+    <a href="javascript:void(0)" class="easyui-linkbutton c6" iconCls="icon-ok" onclick="saveOrUpdateEmp()" style="width:90px">保存</a>
+    <a href="javascript:void(0)" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dlg').dialog('close')" style="width:90px">取消</a>
+</div>
+</body>
+</html>

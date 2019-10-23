@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{common::header('注册')}"></head>
+<body>
+<div class="easyui-panel" title="注册" style="width:100%;max-width:400px;padding:30px 6px;">
+    <form id="ff" method="post">
+        <div style="margin-bottom:20px">
+            <input class="easyui-textbox" name="name" style="width:100%" data-options="label:'用户名:',required:true,validType:['length[6,12]','CHS']">
+        </div>
+        <div style="margin-bottom:20px">
+            <input class="easyui-textbox" type="password" id="pwd" name="pwd" style="width:100%" data-options="label:'密码:',required:true,validType:['length[6,12]']">
+        </div>
+        <div style="margin-bottom:20px">
+            <input class="easyui-textbox" type="password" name="repwd" style="width:100%" data-options="label:'确认密码:',required:true" validType="equals['#pwd']" >
+        </div>
+        <div style="margin-bottom:20px">
+            <input class="easyui-textbox" name="email" style="width:100%" data-options="label:'邮箱:',required:true,validType:'email'">
+        </div>
+        <div style="margin-bottom:20px">
+            <input class="easyui-textbox" name="age" style="width:100%" data-options="label:'年龄:',required:true,validType:['vage[16,100]']">
+        </div>
+        <div style="margin-bottom:20px">
+            <input class="easyui-textbox" name="phone" style="width:100%" data-options="label:'手机号:',required:true" validType="mobile">
+        </div>
+    </form>
+    <div style="text-align:center;padding:5px 0">
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="submitForm()" style="width:80px">Submit</a>
+        <a href="javascript:void(0)" class="easyui-linkbutton" onclick="clearForm()" style="width:80px">Clear</a>
+    </div>
+<script>
+    function submitForm(){
+        $('#ff').form('submit');
+    }
+    function clearForm(){
+        $('#ff').form('clear');
+    }
+    //自定义验证方法
+    $.extend($.fn.validatebox.defaults.rules, {
+        equals: {
+            validator: function(value,param){
+                return value == $(param[0]).val();
+            },
+            message: '密码必须一致'
+        },
+        CHS: {
+            validator: function (value, param) {
+                return /^[\u0391-\uFFE5]+$/.test(value);
+            },
+            message: '请输入汉字'
+        },
+        vage:{
+            validator:function (value,param) {
+                return value>=param[0] && value <param[1];
+            },
+            message:'年龄必须大于等于{0}并且小于{1}'
+        },
+        mobile: {
+            validator: function (value, param) {
+                return /^(?:13\d|15\d|18\d)-?\d{5}(\d{3}|\*{3})$/.test(value);
+            },
+            message: '手机号码不正确'
+        }
+    });
+</script>
+</body>
+</html>

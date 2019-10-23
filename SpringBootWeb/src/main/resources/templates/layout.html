@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{common::header('布局')}"></head>
+<body class="easyui-layout">
+<div data-options="region:'north',border:false" style="height:63px;background:#B3DFDA;">
+    <img src="images/logo.png">
+</div>
+<div data-options="region:'west',split:true,title:'菜单',href:'/nav'" style="width:230px;">
+
+</div>
+<div data-options="region:'east',split:true,collapsed:true,title:'East'" style="width:190px;">
+    <div id="cc" class="easyui-calendar" style="width:180px;height:180px;"></div>
+</div>
+<div data-options="region:'south',border:false" style="height:50px;background:#A9FACD;text-align: center">
+    Copyright All Rights Reserved
+    长沙图灵软件学院 版权所有湘ICP备15004237号-4
+</div>
+<div data-options="region:'center',title:'Center'">
+    <div id="tt" class="easyui-tabs" style="width:700px;height:250px" data-options="fit:'true'">
+        <!--选项卡-->
+    </div>
+</div>
+</body>
+</html>

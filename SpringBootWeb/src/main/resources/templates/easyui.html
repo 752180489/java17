@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{common::header('Easy入门')}">
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div  style="margin:200px auto;width: 400px">
+<div id="p" class="easyui-panel" title="My Panel"
+     style="width:500px;height:220px;padding:5px;background:#fafafa;"
+     data-options="iconCls:'icon-save',closable:true,
+collapsible:true,minimizable:true,maximizable:true">
+    <form id="loginForm">
+    <table border="0" width="280" th:height="150" align="center">
+        <tr>
+          <td colspan="2" style="font-size: 20px;font-weight: bold;text-align: center" >员工登录</td>
+        </tr>
+        <tr>
+           <td>用户名：</td>
+           <td><input type="text" name="userName"></td>
+        </tr>
+        <tr>
+            <td>密码：</td>
+            <td><input type="password" name="passWord"></td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+                <a id="submitBtn" href="#" class="easyui-linkbutton" data-options="iconCls:'icon-ok'">登录</a>
+            </td>
+        </tr>
+    </table>
+    </form>
+</div>
+</div>
+<script type="text/javascript">
+    $("#submitBtn").click(function () {
+        $('#loginForm').form('submit', {
+                url:"/login",
+            onSubmit: function () {
+                // do some check
+                // return false;//不能提交
+                // return false to prevent submit;
+        },
+        success:function (data) {
+           // alert(data);
+            if (data=="success"){
+                location.href="/emps";
+            }else{
+                location.href="/easyui";
+            }
+        }
+    });
+  });
+</script>
+</body>
+</html>
